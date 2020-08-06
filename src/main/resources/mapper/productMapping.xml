@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper:根标签，namespace：命名空间，随便写，一般保证命名空间唯一 -->
+
+<mapper namespace="com.fh.dao.ProductDao">
+
+    <select id="queryHotProduct" resultType="com.fh.entity.Product">
+        select goodsId as id,goodsName as name,imgPath,areaIds,price,typeId from shop_goods where isHot=1
+    </select>
+
+    <select id="queryAreaData" parameterType="com.fh.util.DataTablePageBean" resultType="com.fh.entity.Product">
+        select * from shop_goods where id=#{id}
+    </select>
+
+    <select id="queryProductDataById" parameterType="java.lang.Integer" resultType="com.fh.entity.Product">
+    select goodsId as id,goodsName as name,imgPath,areaIds,price from shop_goods where goodsId=#{goodsId}
+   </select>
+
+    <select id="queryProductDataByTypeId" parameterType="com.fh.util.DataTablePageBean" resultType="com.fh.entity.Product">
+        select goodsId as id,goodsName as name,price,imgPath,areaIds from shop_goods
+        <where>
+            <if test="typeId != null and typeId != ''">
+                typeId like CONCAT('%',#{typeId},'%');
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryProductCartById" parameterType="java.lang.Integer" resultType="com.fh.entity.ProductCart">
+         select goodsId,goodsName,imgPath,price from shop_goods where goodsId=#{pid}
+    </select>
+
+    <update id="updateProductCount">
+        /* 保证 商品的超卖问题  返回影响的数据条数*/
+        update shop_goods set storageCount=storageCount-#{count} where goodsId=#{goodsId} and storageCount-#{count}>=0
+    </update>
+
+
+</mapper>
